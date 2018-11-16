@@ -16,5 +16,8 @@ extern const string colError;
 extern const string colSuccess;
 extern const string colResult;
 extern const string colClear;
+extern const string colWarning;
+extern const string colArg;
+extern const string colInverse;
 
 #endif
