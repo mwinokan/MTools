@@ -9,10 +9,13 @@ int main() {
 	cout << colVarName << "colVarName (36m)" << colClear << endl;
   cout << colVarType << "colVarType (95m)" << colClear << endl;
   cout << colFunc << "colFunc (36;4m)" << colClear << endl;
-  cout << colFile << "colFile (33m)" << colClear << endl;
+  cout << colFile << "colFile (38;5;11m)" << colClear << endl;
   cout << colError << "colError (31;1m)" << colClear << endl;
   cout << colSuccess << "colSuccess (32;1m)" << colClear << endl;
   cout << colResult << "colResult (34m)" << colClear << endl;
+  cout << colWarning << "colWarning (38;5;166m)" << colClear << endl;
+  cout << colArg << "colArg (38;5;154m)" << colClear << endl;
+  cout << colInverse << "colInverse (34m)" << colClear << endl;
   cout << colClear << "colClear (0m)" << colClear << endl;
 
   cout << endl;
@@ -27,7 +30,9 @@ int main() {
        << colFunc << "function" 
        << colClear << "((" 
        << colVarType << "double" 
-       << colClear << ") arg ) = " 
+       << colClear << ") "
+       << colArg << "arg" 
+       << colClear << " ) = "
        << colResult << "42.0" 
        << colClear << endl;
 	
