@@ -60,7 +60,20 @@ void MRange::Calculate() {
   if (!stepSet) {
     numsteps = 0;
   } else {
-    numsteps = range / step + 1;
+    if (range == 0) {
+      numsteps = 1;
+      step = 0.0;
+    } else {
+      if (step > range) {
+        cout << colWarning << "WARNING: step size larger than range for "
+             << colVarName << name << colClear << endl;
+        cout << colWarning << "         defaulted to " << colVarName << "step" 
+             << colWarning << " = " << colVarName << "range" << colClear << endl;
+        step = range;
+        numsteps = 2;
+      }
+      numsteps = range / step + 1;
+    }
   }
 }
 
