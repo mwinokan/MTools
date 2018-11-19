@@ -19,5 +19,6 @@ extern const string colClear;
 extern const string colWarning;
 extern const string colArg;
 extern const string colInverse;
+extern const string colUnderline;
 
 #endif

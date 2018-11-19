@@ -14,3 +14,4 @@ extern const string colClear = "\033[0m";
 extern const string colWarning = "\033[38;5;166m";
 extern const string colArg = "\033[38;5;154m";
 extern const string colInverse = "\033[7m";
+extern const string colUnderline = "\033[4m";
