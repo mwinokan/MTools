@@ -5,6 +5,24 @@
 
 using namespace std;
 
+string exec(const char* cmd) {
+    char buffer[128];
+    string result = "";
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) throw runtime_error("popen() failed!");
+    try {
+        while (!feof(pipe)) {
+            if (fgets(buffer, 128, pipe) != NULL)
+                result += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    return result;
+}
+
 // Constructor:
 MInterface::MInterface() {
   fMaxFlagLength = 0;
@@ -15,6 +33,7 @@ MInterface::MInterface() {
 // Destructor
 MInterface::~MInterface() {
 }
+
 
 bool MInterface::ParseArgs(int argc, char** argv, bool debug) {
 

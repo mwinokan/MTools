@@ -14,6 +14,8 @@
 
 using namespace std;
 
+string exec(const char* cmd);
+
 class MInterface {
   public: 
     MInterface();   // constructor
