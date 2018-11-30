@@ -23,6 +23,25 @@ string exec(const char* cmd) {
     return result;
 }
 
+string exec(const string cmd2) {
+    const char* cmd = cmd2.c_str();
+    char buffer[128];
+    string result = "";
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) throw runtime_error("popen() failed!");
+    try {
+        while (!feof(pipe)) {
+            if (fgets(buffer, 128, pipe) != NULL)
+                result += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    return result;
+}
+
 // Constructor:
 MInterface::MInterface() {
   fMaxFlagLength = 0;
