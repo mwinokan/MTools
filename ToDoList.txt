@@ -1,0 +1,5 @@
+MInterface:
+	- New header and source files for exec() and FileExists() and other shell commands.
+MUnits:
+	- Create new class to do unit conversion.
+	- Initialise with standard parameters. Create conversion constants.
