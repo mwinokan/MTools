@@ -72,9 +72,43 @@ void MRange::Calculate() {
         step = range;
         numsteps = 2;
       }
-      numsteps = range / step + 1;
+      numsteps = round(range / step + 1.0);
     }
   }
+}
+
+bool MRange::IsClipped(double value, int verbosity) {
+  if (value <= low) {
+    if (verbosity > 0)
+      cout << colWarning << "WARNING: "
+           << colVarName << name
+           << colWarning << " has clipped! ("
+           << colArg << value
+           << colWarning << " <= "
+           << colArg << low
+           << colWarning << ")."
+           << colClear << endl;
+    return true;
+  } else if (value >= high) {
+    if (verbosity > 0)
+      cout << colWarning << "WARNING: "
+           << colVarName << name
+           << colWarning << " has clipped! ("
+           << colArg << value
+           << colWarning << " >= "
+           << colArg << high
+           << colWarning << ")."
+           << colClear << endl;
+    return false;
+  } else {
+    if (verbosity > 1)
+      cout << colArg << value
+           << colClear << " is in range of "
+           << colVarName << name
+           << colClear << endl;
+    return true;
+  }
+  return 0;
 }
 
 double MRange::Low(int verbosity) {

@@ -6,8 +6,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 using namespace std;
+
+/*. TO-DO's
+
+    - Write iterator class
+    - Write check clipping function
+
+*/
 
 class MRange {
   public:
@@ -33,6 +41,9 @@ class MRange {
     void SetHigh(double);
     void SetStep(double);
     void SetName(string);
+
+    // Manipulation
+    bool IsClipped(double, int verbosity = 0);
 
   private:
     string name;
