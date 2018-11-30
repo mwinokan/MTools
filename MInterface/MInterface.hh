@@ -15,6 +15,7 @@
 using namespace std;
 
 string exec(const char* cmd);
+string exec(const string cmd);
 
 class MInterface {
   public: 
