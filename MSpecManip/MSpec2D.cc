@@ -51,6 +51,55 @@ void MSpec2D::CalibrateY(double scale, double offset) {
   }
 }
 
+bool MSpec2D::Load1D(string file, char separator) {
+  if (FileExists(file)) {
+    int xTemp = 1;
+    ifstream inFile(file);
+    string line;
+    while (getline(inFile,line)) {
+      if (line.at(line.find_first_not_of(' ')) == '#') continue; // ignore lines starting with #
+      if (separator != ' ') replace(line.begin(), line.end(), separator, ' '); // change to space-delimited
+      istringstream sstream(line);
+      double yTemp;
+      sstream >> yTemp;
+      Add((double)xTemp,yTemp);
+      xTemp++;
+    }
+    return true;
+  } else {
+    cout << colError << "ERROR: File "
+         << colFile << file
+         << colError << "not accessible!"
+         << colClear << endl;
+    return false;
+  }
+}
+
+bool MSpec2D::Load1D(string file, MRange range, char separator) {
+  if (FileExists(file)) {
+    int xTemp = 1;
+    ifstream inFile(file);
+    string line;
+    while (getline(inFile,line)) {
+      if (line.at(line.find_first_not_of(' ')) == '#') continue; // ignore lines starting with #
+      if (separator != ' ') replace(line.begin(), line.end(), separator, ' '); // change to space-delimited
+      istringstream sstream(line);
+      double yTemp;
+      sstream >> yTemp;
+      if ((double)xTemp >= range.Low() && (double)xTemp <= range.High())
+        Add((double)xTemp,yTemp);
+      xTemp++;
+    }
+    return true;
+  } else {
+    cout << colError << "ERROR: File "
+         << colFile << file
+         << colError << "not accessible!"
+         << colClear << endl;
+    return false;
+  }
+}
+
 bool MSpec2D::Load2D(string file, char separator) {
   if (FileExists(file)) {
     ifstream inFile(file);
@@ -135,12 +184,30 @@ bool MSpec2D::Print() {
 
   for (size_t i = 0; i < numData; i++) {
     cout << colVarName << name 
-         << colClear << "["
-         << i << "] = ("
+         << colClear << "[" 
+         << colArg << i 
+         << colClear << "] = ("
          << colResult << xData[i] 
          << colClear << "," 
          << colResult << yData[i] 
          << colClear << ")" << endl;
+  }
+  return true;
+}
+
+bool MSpec2D::Print(MRange range) {
+  if (CheckEmpty()) return false;
+
+  for (size_t i = 0; i < numData; i++) {
+    if (xData[i] >= range.Low() && xData[i] <= range.High())
+      cout << colVarName << name 
+           << colClear << "[" 
+           << colArg << i 
+           << colClear << "] = ("
+           << colResult << xData[i] 
+           << colClear << "," 
+           << colResult << yData[i] 
+           << colClear << ")" << endl;
   }
   return true;
 }
@@ -155,6 +222,21 @@ bool MSpec2D::Print(string file, bool append) {
 
   for (size_t i = 0; i < numData; i++) {
     outFile << xData[i] << outSep << yData[i] << endl;
+  }
+  return true;
+}
+
+bool MSpec2D::Print(string file, MRange range, bool append) {
+  if (CheckEmpty()) return false;
+
+  ofstream outFile(file);
+  outFile << "# " << name << ": " 
+          << xLabel << "[" << xUnit << "]" << outSep
+          << yLabel << "[" << yUnit << "]" << endl;
+
+  for (size_t i = 0; i < numData; i++) {
+    if (xData[i] >= range.Low() && xData[i] <= range.High())
+      outFile << xData[i] << outSep << yData[i] << endl;
   }
   return true;
 }

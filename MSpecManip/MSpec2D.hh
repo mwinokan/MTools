@@ -37,6 +37,8 @@ class MSpec2D {
 
     // data input functions:
     void Add(double, double);
+    bool Load1D(string, char separator = ' ');
+    bool Load1D(string, MRange, char separator = ' ');
     bool Load2D(string, char separator = ' ');
     bool Load2D(string, MRange, char separator = ' ');
     void ClearData();
@@ -58,7 +60,9 @@ class MSpec2D {
 
     // data output functions:
     bool Print();
+    bool Print(MRange);
     bool Print(string file, bool append = false);
+    bool Print(string file, MRange, bool append = false);
 
     // checks/errors:
     bool CheckEmpty();
