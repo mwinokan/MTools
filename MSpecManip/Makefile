@@ -10,9 +10,10 @@ MORE_NAMES = MSpec2D MRange
 # dependencies:
 
 M_COLOURS_DIR = ../MColours/
-INCLUDE = -I$(M_COLOURS_DIR)
-LIBSDIR = -L$(M_COLOURS_DIR)
-LIBLOAD = -lMColours
+M_VARS_DIR = ../MVars/
+INCLUDE = -I$(M_COLOURS_DIR) -I$(M_VARS_DIR)
+LIBSDIR = -L$(HOME)/lib
+LIBLOAD = -lMColours -lMVars
 
 # compilation:
 
