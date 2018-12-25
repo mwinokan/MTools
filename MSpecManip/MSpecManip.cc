@@ -273,3 +273,281 @@ double MSpecManip::CoeffDetermination(MSpec2D refSpec, MSpec2D fitSpec, MRange r
          <<  ") = " << colResult << coeffDetermination << colClear << endl;
   return coeffDetermination;
 }
+
+MDouble MSpecManip::ConstFitStdErr(MSpec2D spec, MRange range, int verbosity) {
+  MDouble dResult(spec.name + " Const. Fit",spec.yUnit);
+  double mean = spec.MeanY(range,verbosity-1);
+  dResult.SetValue(mean);
+  double sumSq = SumSqYBetween(spec,mean,range,verbosity-1);
+  int n = spec.NumPointsInRange(range,verbosity-1);
+  dResult.SetError(sqrt(sumSq/((double) n - 1.0))/(sqrt(n)));
+  if (verbosity > 0) dResult.Print();
+  return dResult;
+}
+
+MDouble MSpecManip::ConstFitStdDev(MSpec2D spec, MRange range, int verbosity) {
+  MDouble dResult(spec.name + " Const. Fit",spec.yUnit);
+  double mean = spec.MeanY(range,verbosity-1);
+  dResult.SetValue(mean);
+  double sumSq = SumSqYBetween(spec,mean,range,verbosity-1);
+  int n = spec.NumPointsInRange(range,verbosity-1);
+  dResult.SetError(sqrt(sumSq/((double) n - 1.0)));
+  if (verbosity > 0) dResult.Print();
+  return dResult;
+}
+
+void MSpecManip::PeakFind(MSpec2D spec, double offset, double threshold, MPoint* trig, MPoint* peak, MPoint* zero) {
+
+  double trigT, trigV, peakT, peakV, zeroT, zeroV;
+
+  bool trigSearch = true;
+  bool peakSearch = false;
+  bool zeroSearch = false;
+
+  double bestPeakT;
+  double bestPeakV = offset + threshold;
+
+  for (size_t i = 0; i < spec.xData.size(); i++) {
+    double thisTime = spec.xData[i];
+    double thisVolt = spec.yData[i];
+
+    if (trigSearch && thisVolt > offset + threshold) {
+          trigT = thisTime;
+          trigV = thisVolt;
+          trigSearch = false;
+          peakSearch = true;
+          zeroSearch = true;
+          // cout << thisTime << " " << thisVolt << endl;
+    }
+
+    if (peakSearch) {
+        // outputfile << thisVolt << " " << bestPeakV << " " << (thisVolt > bestPeakV) << endl;
+        if (thisVolt > bestPeakV) {
+          bestPeakV = thisVolt;
+          bestPeakT = thisTime;
+        }
+      }
+
+      if (zeroSearch && bestPeakV > offset + 2.0*threshold) {
+        if (thisVolt < offset + threshold) {
+          zeroT = thisTime;
+          zeroV = thisVolt;
+          peakSearch = false;
+          zeroSearch = false;
+        }
+      }
+
+      if (!trigSearch && !peakSearch && !zeroSearch) {
+        break;
+      }
+
+  }
+
+  peakT = bestPeakT;
+  peakV = bestPeakV;
+
+  trig->SetX(trigT,"[time]");
+  trig->SetY(trigV,"[voltage]");
+  peak->SetX(peakT,"[time]");
+  peak->SetY(peakV,"[voltage]");
+  zero->SetX(zeroT,"[time]");
+  zero->SetY(zeroV,"[voltage]");
+
+}
+
+void MSpecManip::TroughFind(MSpec2D spec, double offset, double threshold, MPoint* trig, MPoint* trough, MPoint* zero) {
+
+  double trigT, trigV, troughT, troughV, zeroT, zeroV;
+
+  bool trigSearch = true;
+  bool troughSearch = false;
+  bool zeroSearch = false;
+
+  double bestTroughT;
+  double bestTroughV = offset + threshold;
+
+  for (size_t i = 0; i < spec.xData.size(); i++) {
+    double thisTime = spec.xData[i];
+    double thisVolt = spec.yData[i];
+
+    if (trigSearch && thisVolt < offset - threshold) {
+          trigT = thisTime;
+          trigV = thisVolt;
+          trigSearch = false;
+          troughSearch = true;
+          zeroSearch = true;
+          // cout << thisTime << " " << thisVolt << endl;
+    }
+
+    if (troughSearch) {
+        // outputfile << thisVolt << " " << bestTroughV << " " << (thisVolt > bestTroughV) << endl;
+        if (thisVolt < bestTroughV) {
+          bestTroughV = thisVolt;
+          bestTroughT = thisTime;
+        }
+      }
+
+      if (zeroSearch && bestTroughV > offset - 2.0*threshold) {
+        if (thisVolt > offset + threshold) {
+          zeroT = thisTime;
+          zeroV = thisVolt;
+          troughSearch = false;
+          zeroSearch = false;
+        }
+      }
+
+      if (!trigSearch && !troughSearch && !zeroSearch) {
+        break;
+      }
+
+  }
+
+  troughT = bestTroughT;
+  troughV = bestTroughV;
+
+  trig->SetX(trigT,"[time]");
+  trig->SetY(trigV,"[voltage]");
+  trough->SetX(troughT,"[time]");
+  trough->SetY(troughV,"[voltage]");
+  zero->SetX(zeroT,"[time]");
+  zero->SetY(zeroV,"[voltage]");
+
+}
+
+double MSpecManip::Integrate(MSpec2D spec, MRange range, int verbosity) {
+
+  // find iteration range
+  int start = spec.IteratorBelowX(range.Low());
+  int stop = spec.IteratorAboveX(range.High());
+
+  double w, h1, h2;
+  double sum = 0.0;
+
+  if (start == stop) return sum;
+  
+  for (size_t i = start; i < stop; i++) {
+    // if start interpolate
+    if (i == start) {
+      w = spec.xData[start+1] - range.Low();
+      h2 = spec.yData[start+1];
+      h1 = spec.yData[start+1] - w*(spec.yData[start+1]-spec.yData[start])/(spec.xData[start+1]-spec.xData[start]);
+    } else if (i == stop-1) {
+      w = spec.xData[stop] - range.High();
+      h1 = spec.yData[stop-1];
+      h2 = spec.yData[stop-1] + w*(spec.yData[stop]-spec.yData[stop-1])/(spec.xData[stop]-spec.xData[stop-1]);
+    } else {
+      w = spec.xData[i+1] - spec.xData[i];
+      h1 = spec.yData[i];
+      h1 = spec.yData[i+1];
+    }
+    sum += w * (h1 + h2) / 2.0; 
+  }
+  if (verbosity > 0) 
+    cout << colFunc << "Integrate" 
+         << colClear << "(" 
+         << colVarName << spec.name 
+         << colClear << "," 
+         << colArg << range.Low() 
+         << colClear << ":"
+         << colArg << range.High() 
+         << colClear << ") = " 
+         << colResult << sum 
+         << colClear << endl;
+  return sum;
+}
+
+double MSpecManip::Integrate(MSpec2D spec, int verbosity) {
+
+  // find iteration range
+  int start = 0;
+  int stop = spec.numData;
+
+  double w, h1, h2;
+  double sum = 0.0;
+
+  if (start == stop) return sum;
+
+  for (size_t i = start; i < stop; i++) {
+    w = spec.xData[i+1] - spec.xData[i];
+    h1 = spec.yData[i];
+    h1 = spec.yData[i+1];
+    sum += w * (h1 + h2) / 2.0; 
+  }
+  if (verbosity > 0) 
+    cout << colFunc << "Integrate" 
+         << colClear << "(" 
+         << colVarName << spec.name 
+         << colClear << ") = " 
+         << colResult << sum 
+         << colClear << endl;
+  return sum;
+}
+
+double MSpecManip::Integrate(MSpec2D spec, double offset, int verbosity) {
+
+  // find iteration range
+  int start = 0;
+  int stop = spec.numData;
+
+  double w, h1, h2;
+  double sum = 0.0;
+
+  if (start == stop) return sum;
+
+  for (size_t i = start; i < stop; i++) {
+    w = spec.xData[i+1] - spec.xData[i];
+    h1 = spec.yData[i];
+    h1 = spec.yData[i+1];
+    sum += w * (h1 + h2) / 2.0 - w * offset; 
+  }
+  if (verbosity > 0) 
+    cout << colFunc << "Integrate" 
+         << colClear << "(" 
+         << colVarName << spec.name 
+         << colClear << ") = " 
+         << colResult << sum 
+         << colClear << endl;
+  return sum;
+}
+
+double MSpecManip::Integrate(MSpec2D spec, double offset, MRange range, int verbosity) {
+
+  // find iteration range
+  int start = spec.IteratorBelowX(range.Low());
+  int stop = spec.IteratorAboveX(range.High());
+
+  double w, h1, h2;
+  double sum = 0.0;
+
+  if (start == stop) return sum;
+
+  for (size_t i = start; i < stop; i++) {
+    // if start interpolate
+    if (i == start) {
+      w = spec.xData[start+1] - range.Low();
+      h2 = spec.yData[start+1];
+      h1 = spec.yData[start+1] - w*(spec.yData[start+1]-spec.yData[start])/(spec.xData[start+1]-spec.xData[start]);
+    } else if (i == stop-1) {
+      w = spec.xData[stop] - range.High();
+      h1 = spec.yData[stop-1];
+      h2 = spec.yData[stop-1] + w*(spec.yData[stop]-spec.yData[stop-1])/(spec.xData[stop]-spec.xData[stop-1]);
+    } else {
+      w = spec.xData[i+1] - spec.xData[i];
+      h1 = spec.yData[i];
+      h1 = spec.yData[i+1];
+    }
+    sum += w * (h1 + h2) / 2.0 - w * offset; 
+  }
+  if (verbosity > 0) 
+    cout << colFunc << "Integrate" 
+         << colClear << "(" 
+         << colVarName << spec.name 
+         << colClear << "," 
+         << colArg << range.Low() 
+         << colClear << ":"
+         << colArg << range.High() 
+         << colClear << ") = " 
+         << colResult << sum 
+         << colClear << endl;
+  return sum;
+}

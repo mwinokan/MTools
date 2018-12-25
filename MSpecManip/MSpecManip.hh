@@ -14,6 +14,7 @@
 #include <cmath>
 
 #include "MSpec2D.hh"
+#include "MVars.hh"
 #include "MRange.hh"
 #include "MColours.hh"
 
@@ -33,12 +34,26 @@ class MSpecManip {
     double SumXBetween(MSpec2D, double, MRange, int verbosity = 0);
     double SumYBetween(MSpec2D, double, int verbosity = 0);
     double SumYBetween(MSpec2D, double, MRange, int verbosity = 0);
+
     double SumSqXBetween(MSpec2D, double, int verbosity = 0);
     double SumSqXBetween(MSpec2D, double, MRange, int verbosity = 0);
     double SumSqYBetween(MSpec2D, double, int verbosity = 0);
     double SumSqYBetween(MSpec2D, double, MRange, int verbosity = 0);
+
     double CoeffDetermination(MSpec2D, MSpec2D, int verbosity = 0);
     double CoeffDetermination(MSpec2D, MSpec2D, MRange, int verbosity = 0);
+
+    MDouble ConstFitStdErr(MSpec2D, MRange, int verbosity = 0);
+    MDouble ConstFitStdDev(MSpec2D, MRange, int verbosity = 0);
+
+    // Zero-Point location is buggy!
+    void PeakFind(MSpec2D, double offset, double treshold, MPoint* trig, MPoint* peak, MPoint* zero);
+    void TroughFind(MSpec2D, double offset, double treshold, MPoint* trig, MPoint* trough, MPoint* zero);
+
+    double Integrate(MSpec2D, int verbosity = 0);
+    double Integrate(MSpec2D, MRange, int verbosity = 0);
+    double Integrate(MSpec2D, double, int verbosity = 0);
+    double Integrate(MSpec2D, double, MRange, int verbosity = 0);
 
   private:
 
