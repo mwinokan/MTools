@@ -17,6 +17,13 @@ Beginnings of a spectrum manipulation library. Manipulator class ```MSpecManip``
 - ```MRange``` class to define ranges for variables.
 - ```MSpec2D``` class to define, load, and work with two-dimensional spectral data.
 
+### MVars
+
+Beginnings of a set of custom variable classes.
+
+- ```MDouble``` double precision floating value with uncertainty.
+- ```MPoint``` two-dimensional double precision floating coordinate with uncertainty.
+
 ### MTest
 
 Example single ```.cpp``` file project using the various ```MTools``` classes, and example ```Makefile```.
