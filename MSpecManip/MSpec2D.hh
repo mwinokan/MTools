@@ -41,6 +41,8 @@ class MSpec2D {
     bool Load1D(string, MRange, char separator = ' ');
     bool Load2D(string, char separator = ' ');
     bool Load2D(string, MRange, char separator = ' ');
+    bool Load(string, int, int, char separator = ' ');
+    bool Load(string, MRange, int, int, char separator = ' ');
     void ClearData();
     void ClearAll();
 
@@ -50,7 +52,10 @@ class MSpec2D {
 
     // statistics:
     double MeanX(int verbose = 0);
+    double MeanX(MRange, int verbose = 0);
     double MeanY(int verbose = 0);
+    double MeanY(MRange, int verbose = 0);
+    int NumPointsInRange(MRange, int verbose = 0);
 
     // set properties:
     void SetName(string);
@@ -67,6 +72,10 @@ class MSpec2D {
     // checks/errors:
     bool CheckEmpty();
   
+    // Iterators
+    int IteratorBelowX(double); // Closest (below) iterator value
+    int IteratorAboveX(double); // Closest (below) iterator value
+
   private:
 
     bool FileExists(const string& name);
