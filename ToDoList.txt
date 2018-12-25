@@ -1,5 +1,7 @@
 MInterface:
-	- New header and source files for exec() and FileExists() and other shell commands.
+	- Add source for FileExists() and other shell commands.
+MSpecManip:
+  - Move all data storage to private variables. Write getter and setter functions.
 MUnits:
 	- Create new class to do unit conversion.
 	- Initialise with standard parameters. Create conversion constants.
