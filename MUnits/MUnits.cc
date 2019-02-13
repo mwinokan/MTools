@@ -29,7 +29,8 @@ MUnits::MUnits() :
   uLength(), 
   uMass(), 
   uSpeed(), 
-  uSpeedSq()
+  uSpeedSq(),
+  Null()
 {
   Metre = MUnit("length","m","metre",1.0),
   Second = MUnit("time","s","second",1.0),
@@ -52,6 +53,8 @@ MUnits::MUnits() :
   uMass = MUnit(KiloGram);
   uSpeed = MUnit(MetresPerSecond);
   uSpeedSq = MUnit(MetresSquaredPerSecondSquared);
+
+  Null = MUnit("","","",0.0);
 }
 
 double MUnits::ConvertSI(MUnit uFrom) {

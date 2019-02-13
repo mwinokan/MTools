@@ -77,6 +77,9 @@ class MUnits {
     MUnit AstronomicalUnitsPerSecond;
     MUnit AstronomicalUnitsSquaredPerSecondSquared;
 
+    // Null:
+    MUnit Null;
+
   private:
     // Selected Units (SI Default);
     MUnit uTime;
